@@ -11,17 +11,24 @@ import (
 	"urlshortener/model"
 )
 
-type UrlService struct {
-	URLRepository       database.URLRepository
+type UrlServiceImpl struct {
+	URLRepository       database.DBRepository[model.URL]
 	urlFactory          factory.URLFactory
 	urlVisitsRepository database.URLVisitRepository
 }
 
-func (urlService *UrlService) GetAll() ([]model.URL, error) {
+func NewUrlService(urlRepository database.DBRepository[model.URL], urlVisitRepository database.URLVisitRepository) UrlServiceImpl {
+	return UrlServiceImpl{
+		URLRepository:       urlRepository,
+		urlVisitsRepository: urlVisitRepository,
+	}
+}
+
+func (urlService *UrlServiceImpl) GetAll() ([]model.URL, error) {
 	return urlService.URLRepository.GetAll()
 }
 
-func (urlService *UrlService) Add(newUrl model.NewURL) (model.URL, error) {
+func (urlService *UrlServiceImpl) Add(newUrl model.NewURL) (model.URL, error) {
 	urlToAdd := urlService.urlFactory.FromNewURL(newUrl)
 
 	//Prepare retriable function in case of Unique constraint violation on generatedExternalId
@@ -43,7 +50,7 @@ func (urlService *UrlService) Add(newUrl model.NewURL) (model.URL, error) {
 	}
 
 	doRetry := retry.Do(context.Background(),
-		retry.WithMaxRetries(3, retry.NewConstant(1*time.Nanosecond)),
+		retry.WithMaxRetries(2, retry.NewConstant(1*time.Nanosecond)),
 		addNewURLWithRetries)
 
 	if err := doRetry; err != nil {
@@ -54,6 +61,6 @@ func (urlService *UrlService) Add(newUrl model.NewURL) (model.URL, error) {
 
 }
 
-func (urlService *UrlService) GetByExternalID(externalID string) (model.URL, error) {
+func (urlService *UrlServiceImpl) GetByExternalID(externalID string) (model.URL, error) {
 	return urlService.URLRepository.GetByExternalId(externalID)
 }

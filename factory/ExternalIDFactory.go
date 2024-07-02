@@ -1,36 +1,39 @@
 package factory
 
 import (
-	"github.com/joho/godotenv"
 	"math/rand"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 )
 
+//TODO need to find a way to read .env here through tests as well.
 //const externalIDLength = 6
 
-var externalIDLength int
-var charset string
-
-func init() {
-	rand.New(rand.NewSource(time.Now().UnixNano()))
-	err := godotenv.Load()
-	length, err := strconv.Atoi(os.Getenv("URL_EXTERNAL_ID_SIZE"))
-	if err != nil {
-		panic(err)
-	}
-	externalIDLength = length
-	charset = os.Getenv("URL_EXTERNAL_ID_CHARSET")
-}
+var ExternalIDLength int
+var ExternalIDCharset string
+var loadOnce sync.Once
 
 type ExternalIDFactory struct {
 }
 
-func (externalIDService *ExternalIDFactory) GenerateRandomString() string {
-	result := make([]byte, externalIDLength)
+func loadEnv() {
+	rand.New(rand.NewSource(time.Now().UnixNano()))
+	length, err := strconv.Atoi(os.Getenv("URL_EXTERNAL_ID_SIZE"))
+	if err != nil {
+		panic(err)
+	}
+	ExternalIDLength = length
+	ExternalIDCharset = os.Getenv("URL_EXTERNAL_ID_CHARSET")
+}
+
+func GenerateRandomString() string {
+	loadOnce.Do(loadEnv)
+
+	result := make([]byte, ExternalIDLength)
 	for i := range result {
-		result[i] = charset[rand.Intn(len(charset))]
+		result[i] = ExternalIDCharset[rand.Intn(len(ExternalIDCharset))]
 	}
 	return string(result)
 }

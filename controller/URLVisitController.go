@@ -21,7 +21,7 @@ func (urlVisitController *URLVisitController) Redirect(context *gin.Context) {
 		context.IndentedJSON(http.StatusBadRequest, "{'status':'missing externalid'}")
 	}
 
-	redirectorURL, err := urlVisitController.URLVisitService.GetRedirectorURL(externalId)
+	redirectorURL, err := urlVisitController.URLVisitService.GetRedirectURL(externalId)
 
 	if handlerRedirectError(context, err, externalId) {
 		return

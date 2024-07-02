@@ -18,6 +18,6 @@ CREATE TABLE short_url_visits
     CONSTRAINT short_url_visits_pk PRIMARY KEY (id)
 );
 
-ALTER TABLE short_url_visitsADD CONSTRAINT short_url_visits_short_urls_fk FOREIGN KEY (short_url_id) REFERENCES short_urls (id);
+ALTER TABLE short_url_visits ADD CONSTRAINT short_url_visits_short_urls_fk FOREIGN KEY (short_url_id) REFERENCES short_urls (id);
 CREATE INDEX short_url_visits_short_url_id_idx ON short_url_visits USING btree (short_url_id);
 

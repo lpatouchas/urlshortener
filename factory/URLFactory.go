@@ -7,7 +7,6 @@ import (
 )
 
 type URLFactory struct {
-	externalIDFactory ExternalIDFactory
 }
 
 func (URLFactory *URLFactory) FromSQLRows(rows *sql.Rows) ([]model.URL, error) {
@@ -30,6 +29,6 @@ func (URLFactory *URLFactory) FromSQLRows(rows *sql.Rows) ([]model.URL, error) {
 }
 
 func (URLFactory *URLFactory) FromNewURL(newURL model.NewURL) model.URL {
-	externalId := URLFactory.externalIDFactory.GenerateRandomString()
+	externalId := GenerateRandomString()
 	return model.URL{ExternalID: externalId, LongURL: newURL.LongURL, CreatedAt: time.Now()}
 }

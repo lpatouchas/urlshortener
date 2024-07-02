@@ -10,13 +10,13 @@ import (
 )
 
 type URLVisitService struct {
-	urlService         UrlService
-	urlVisitRepository database.URLVisitRepositoryImpl
+	urlService         GetByExternalID
+	urlVisitRepository database.URLVisitRepository
 	urlVisitFactory    factory.URLVisitFactory
 	redirectCache      *cache.Cache
 }
 
-func NewURLVisitService(urlService UrlService, urlVisitRepository database.URLVisitRepositoryImpl, urlVisitFactory factory.URLVisitFactory) URLVisitService {
+func NewURLVisitService(urlService GetByExternalID, urlVisitRepository database.URLVisitRepository, urlVisitFactory factory.URLVisitFactory) URLVisitService {
 	return URLVisitService{
 		urlService:         urlService,
 		urlVisitRepository: urlVisitRepository,
@@ -25,7 +25,7 @@ func NewURLVisitService(urlService UrlService, urlVisitRepository database.URLVi
 	}
 }
 
-func (urlVisitService *URLVisitService) GetRedirectorURL(urlExternalId string) (string, error) {
+func (urlVisitService *URLVisitService) GetRedirectURL(urlExternalId string) (string, error) {
 
 	// Check cache first
 	if cachedURL, found := urlVisitService.redirectCache.Get(urlExternalId); found {
@@ -48,6 +48,7 @@ func (urlVisitService *URLVisitService) GetRedirectorURL(urlExternalId string) (
 }
 
 func (urlVisitService *URLVisitService) visitURL(url model.URL) error {
+	log.Printf("Registered new URL visit for URL %v", url)
 	return urlVisitService.urlVisitRepository.Add(urlVisitService.urlVisitFactory.FromURL(url))
 }
 

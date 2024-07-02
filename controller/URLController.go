@@ -13,8 +13,14 @@ import (
 // swagger embed files
 
 type URLController struct {
-	urlService       service.UrlService
+	urlService       service.UrlServiceImpl
 	urlVisitsService service.URLVisitService
+}
+
+func NewURLController(urlService service.UrlServiceImpl, urlVisitsService service.URLVisitService) URLController {
+	return URLController{
+		urlService:       urlService,
+		urlVisitsService: urlVisitsService}
 }
 
 // @BasePath /api/v1

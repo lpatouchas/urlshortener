@@ -11,7 +11,7 @@ type GenericError struct {
 }
 
 func (r *GenericError) Error() string {
-	return fmt.Sprintf("status %d: err %v, urlExternalId:%s", r.StatusCode, r.Err)
+	return fmt.Sprintf("status %d: err %v", r.StatusCode, r.Err)
 }
 
 func (r *GenericError) MarshalJSON() ([]byte, error) {

@@ -37,3 +37,7 @@ go.work
 go.work.sum
 
 vcs.xml
+/.idea/.gitignore
+/.idea/modules.xml
+/.idea/urlshortener.iml
+.DS_Store
